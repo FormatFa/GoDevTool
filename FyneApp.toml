@@ -1,0 +1,8 @@
+Website = "https://indigo6a.online"
+
+[Details]
+  Icon = "res/logo.png"
+  Name = "GoDevKit"
+  ID = "indigo6a.online.godevkit"
+  Version = "0.0.1"
+  Build = 5
