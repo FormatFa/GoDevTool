@@ -13,6 +13,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/flopp/go-findfont"
 	"indigo6a.online/gokit/views/encode"
@@ -32,6 +33,12 @@ func init() {
 			break
 		}
 		//mac
+		if strings.Contains(path, "Arial Unicode.ttf") {
+			log.Println("设置字体路径=", path)
+			os.Setenv("FYNE_FONT", path)
+			break
+		}
+		//mac
 		if strings.Contains(path, "Apple Braille.ttf") {
 			log.Println("设置字体路径=", path)
 			os.Setenv("FYNE_FONT", path)
@@ -43,6 +50,11 @@ func init() {
 
 func main() {
 	myApp := app.New()
+	settings := myApp.Settings()
+
+	// 设置主题为黑夜主题，固定住是因为dns查询里有设置字体颜色，mac超级用户运行时会是白色主题，白色主题下会显示有问题
+	settings.SetTheme(theme.DarkTheme())
+
 	w := myApp.NewWindow("GoDevKit")
 
 	helpMenu := fyne.NewMenu("帮助", fyne.NewMenuItem("关于", func() {
@@ -52,7 +64,7 @@ func main() {
 	}))
 	w.SetMainMenu(fyne.NewMainMenu(helpMenu))
 
-	menu := map[string][]string{"": {"网络工具", "加密工具"}, "加密工具": {"常用加密"}, "网络工具": {"端口检测", "host文件"}, "后端开发": {"测试1"}, "前端开发": {"工具1"}, "移动开发": {"Apk文件解析"}}
+	menu := map[string][]string{"": {"网络工具", "加密工具"}, "加密工具": {"常用加密"}, "网络工具": {"端口检测", "host文件", "DNS查询"}, "后端开发": {"测试1"}, "前端开发": {"工具1"}, "移动开发": {"Apk文件解析"}}
 	left := widget.NewTreeWithStrings(menu)
 	left.Resize(fyne.NewSize(90, left.MinSize().Height))
 
@@ -73,7 +85,10 @@ func main() {
 			content.Objects[1] = network.PortUseView(w)
 		} else if uid == "host文件" {
 			content.Objects[1] = network.EditHost(w)
+		} else if uid == "DNS查询" {
+			content.Objects[1] = network.DnsTool(w)
 		}
+
 		content.Objects[1].Resize(fyne.NewSize(400, right.Size().Height))
 
 		content.Refresh()

@@ -16,3 +16,5 @@ fyne package -os android
 TODO:
 - 菜单生成
 - mvc?
+
+- mac检测是否超级权限运行
