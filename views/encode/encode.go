@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/md5"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"log"
 
@@ -64,7 +65,7 @@ func Base64View(w fyne.Window) fyne.CanvasObject {
 		}, w)
 	})
 
-	combo := widget.NewSelect([]string{"base64", "md5"}, func(value string) {
+	combo := widget.NewSelect([]string{"base64", "md5", "json"}, func(value string) {
 
 	})
 	// TODO 记住上次选择
@@ -125,7 +126,7 @@ func Base64View(w fyne.Window) fyne.CanvasObject {
 }
 
 func process(input, output string, action string, algorithm string) ([]byte, error) {
-	log.Println("process input=", input, "output=", output, "action=", action)
+	log.Println("process input=", input, "output=", output, "action=", action+" algo:"+algorithm)
 	var inputBytes []byte
 	var resultBuff []byte
 	if strings.HasPrefix(input, "@") {
@@ -143,6 +144,15 @@ func process(input, output string, action string, algorithm string) ([]byte, err
 			resultBuff = make([]byte, 16)
 			temp := md5.Sum(inputBytes)
 			copy(resultBuff, temp[:])
+		} else if algorithm == "json" {
+			resultBuff = make([]byte, 16)
+			var buffer bytes.Buffer
+			err := json.Compact(&buffer, inputBytes)
+			if err != nil {
+				log.Fatalln("error", err.Error())
+			}
+			resultBuff = buffer.Bytes()
+
 		}
 
 	}
@@ -152,6 +162,16 @@ func process(input, output string, action string, algorithm string) ([]byte, err
 			base64.StdEncoding.Decode(resultBuff, inputBytes)
 		} else if algorithm == "md5" {
 			return nil, errors.New("不支持")
+		} else if algorithm == "json" {
+			log.Println("decode json")
+			resultBuff = make([]byte, 16)
+			var buffer bytes.Buffer
+			err := json.Indent(&buffer, inputBytes, "", " ")
+			if err != nil {
+				log.Fatalln("error", err.Error())
+			}
+			resultBuff = buffer.Bytes()
+			log.Println("result" + string(resultBuff))
 		}
 
 	}
