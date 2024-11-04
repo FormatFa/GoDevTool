@@ -18,6 +18,7 @@ import (
 	"github.com/flopp/go-findfont"
 	"indigo6a.online/gokit/views/encode"
 	"indigo6a.online/gokit/views/network"
+	"indigo6a.online/gokit/views/strtool"
 )
 
 func init() {
@@ -64,7 +65,7 @@ func main() {
 	}))
 	w.SetMainMenu(fyne.NewMainMenu(helpMenu))
 
-	menu := map[string][]string{"": {"网络工具", "加密工具"}, "加密工具": {"常用加密"}, "网络工具": {"端口检测", "host文件", "DNS查询"}, "后端开发": {"测试1"}, "前端开发": {"工具1"}, "移动开发": {"Apk文件解析"}}
+	menu := map[string][]string{"": {"网络工具", "加密工具"}, "加密工具": {"常用加密"}, "网络工具": {"IP", "端口检测", "host文件", "DNS查询"}, "字符工具": {"JSON转换"}, "后端开发": {"测试1"}, "前端开发": {"工具1"}, "移动开发": {"Apk文件解析"}}
 	left := widget.NewTreeWithStrings(menu)
 	left.Resize(fyne.NewSize(90, left.MinSize().Height))
 
@@ -87,6 +88,10 @@ func main() {
 			content.Objects[1] = network.EditHost(w)
 		} else if uid == "DNS查询" {
 			content.Objects[1] = network.DnsTool(w)
+		} else if uid == "JSON转换" {
+			content.Objects[1] = strtool.JsonView(w)
+		} else if uid == "IP" {
+			content.Objects[1] = network.IpTool(w)
 		}
 
 		content.Objects[1].Resize(fyne.NewSize(400, right.Size().Height))
